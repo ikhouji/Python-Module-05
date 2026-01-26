@@ -148,7 +148,7 @@ def processing_log_processor() -> None:
 def processing_multiple_data() -> None:
     print("\n=== Polymorphic Processing Demo ===")
     print("Processing multiple data types through same interface...")
-    list_data = [
+    list_data : List[tuple[DataProcessor, ]] = [
         (NumericProcessor(), [1, 2, 3]),
         (TextProcessor(), "hello world!"),
         (LogProcessor(), "INFO: System ready")
