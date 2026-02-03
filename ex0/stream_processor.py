@@ -19,17 +19,18 @@ class DataProcessor(ABC):
 class NumericProcessor(DataProcessor):
 
     def process(self, data: Any) -> str:
-        total: int = 0
-        the_sum: float = 0
+        count: int = 0
+        suum: float = 0
         average: float = 0
 
         if type(data) is int or type(data) is float:
             return f"Processed {1} numeric values, sum={data}, avg={data}"
-        total = len(data)
+        count = len(data)
         suum = sum(data)
-        if total > 0:
-            average = the_sum / total
-            return f"Processed {total} numeric values,sum={suum},avg={average}"
+        if count > 0:
+            average = suum / count
+            return (f"Processed {count} numeric values, sum={suum},"
+                    f" avg={average}")
         else:
             return ("Error: you Enter an empty list")
 
@@ -53,12 +54,12 @@ class NumericProcessor(DataProcessor):
 class TextProcessor(DataProcessor):
 
     def process(self, data: Any) -> str:
-        lenght = len(data)
-        if lenght == 0:
+        length = len(data)
+        if length == 0:
             return ("Error: you typed an empty string")
         wc = len(data.split(' '))
 
-        return f"Processed text: {lenght} characters, {wc} words"
+        return f"Processed text: {length} characters, {wc} words"
 
     def validate(self, data: Any) -> bool:
         try:
@@ -155,7 +156,6 @@ def processing_multiple_data(list_data: List) -> None:
             result += 1
         except Exception:
             print("Error: invalid data !!!")
-    print("\nFoundation systems online. Nexus ready for advanced streams.")
 
 
 def main() -> Optional[int]:
@@ -169,6 +169,7 @@ def main() -> Optional[int]:
         (LogProcessor(), "INFO: System ready")
     ]
     processing_multiple_data(list_data)
+    print("\nFoundation systems online. Nexus ready for advanced streams.")
     return 0
 
 

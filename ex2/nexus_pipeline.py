@@ -1,4 +1,3 @@
-import csv
 import json
 import time
 from abc import ABC, abstractmethod
@@ -35,7 +34,7 @@ class InputStage():
             elif data["type"] == "csv":
                 print(f"Input: \"{data['raw']}\"")
             elif data["type"] == "stream":
-                print(f"Input: Real-time sensor stream")
+                print("Input: Real-time sensor stream")
             data["valid"] = True
         except Exception:
             print("Error detected in stage 1, Invalid data")
@@ -71,6 +70,7 @@ class TransformStage():
 
         return data
 
+
 class OutputStage():
 
     def __init__(self) -> None:
@@ -95,12 +95,11 @@ class OutputStage():
             for temp in parsed:
                 temps += temp
                 count += 1
-            if temps == 0:
-                print(f"Output: Stream summary: 0 readings, avg: 0°C\n")
+            if count == 0:
+                print("Output: Stream summary: 0 readings, avg: 0°C\n")
             av: float = temps / count
             print(f"Output: Stream summary: {count} readings, avg: {av}°C\n")
         return data
-                
 
 
 class JSONAdapter(ProcessingPipeline):
@@ -172,16 +171,16 @@ def test_failure_pipeline(stages: List[ProcessingStage]) -> None:
     print("Simulating pipeline failure...")
     invalid_data = {
         "raw": "hello,world",
-        "type" : "json",
+        "type": "json",
         "valid": False
     }
     stages[1].process(invalid_data)
     print("Recovery initiated: Switching to backup processor")
     print("Recovery successful: Pipeline restored, processing"
           " resumed")
-    
 
-def main() -> None:
+
+def main() -> Optional[int]:
     start_time = time.time()
 
     print("=== CODE NEXUS - ENTERPRISE PIPELINE SYSTEM ===\n")
@@ -205,9 +204,9 @@ def main() -> None:
 
         print("\n=== Multi-Format Data Processing ===\n")
         data_to_process = [
-        '{"sensor": "temp", "value": 23.5, "unit": "C"}',
-        "user,action,timestamp",
-        [22.1, 21.8, 22.5, 23.0, 21.1]
+            '{"sensor": "temp", "value": 23.5, "unit": "C"}',
+            "user,action,timestamp",
+            [22.1, 21.8, 22.5, 23.0, 21.1]
         ]
         manager.process(data_to_process)
         print("=== Pipeline Chaining Demo ===")
@@ -221,7 +220,8 @@ def main() -> None:
         test_failure_pipeline(stages)
         print("\nNexus Integration complete. All systems operational.")
     except Exception:
-        print("***")
+        print("[CRITICAL SYSTEM ERROR]")
+    return (0)
 
 
 if __name__ == "__main__":

@@ -165,7 +165,7 @@ def initializing_sensor_stream(object: SensorStream) -> None:
     print("\nInitializing Sensor Stream...")
     info = object.get_stats()
     print("Stream ID: ", info['stream_id'], ", Type: ", info["type"], sep='')
-    data_batch = ("temp:22.5", "humidity:65", "pressure:1013")
+    data_batch = ["temp:22.5", "humidity:65", "pressure:1013"]
     print("Processing sensor batch:", data_batch)
     print(object.process_batch(data_batch))
 
@@ -190,7 +190,7 @@ def initializing_event_stream(object: EventStream) -> None:
 
 class StreamProcessor():
 
-    def process_multiple_streams(self, streams: List[DataStream]) -> None:
+    def process_multiple_streams(self, streams: List) -> None:
         if isinstance(streams, list) is False:
             print("this is not a valid data !!!")
             return
@@ -199,11 +199,12 @@ class StreamProcessor():
             data = element[0].process_batch(element[1])
             splited = data.split(' ')
             print(f"- {splited[0]} data: {splited[2]}"
-                  f"{splited[3].strip(',')} processed")
+                  f" {splited[3].strip(',')} processed")
 
 
 def process_multiple_streams() -> None:
     print("\n=== Polymorphic Stream Processing ===")
+    print("Processing mixed stream types through unified interface...\n")
     sensor_data = ["humidity:65", "pressure:1013"]
     transaction_data = ["buy:100", "sell:150", "buy:75", "sell:75"]
     event_data = ["login", "error", "logout"]
@@ -227,7 +228,7 @@ def filter_multiple_data() -> None:
     t_len: int = len(transaction.filter_data(transaction_data, t_criteria))
 
     print(f"Filtered results: {s_len} {s_criteria} sensor alerts,"
-          f"{t_len} {t_criteria} transaction")
+          f" {t_len} {t_criteria} transaction")
 
 
 if __name__ == "__main__":
