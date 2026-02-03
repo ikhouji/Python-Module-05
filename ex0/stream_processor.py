@@ -145,14 +145,9 @@ def processing_log_processor() -> None:
         print("Validation: Log entry not verified !!!")
 
 
-def processing_multiple_data() -> None:
+def processing_multiple_data(list_data: List) -> None:
     print("\n=== Polymorphic Processing Demo ===")
     print("Processing multiple data types through same interface...")
-    list_data : List[tuple[DataProcessor, ]] = [
-        (NumericProcessor(), [1, 2, 3]),
-        (TextProcessor(), "hello world!"),
-        (LogProcessor(), "INFO: System ready")
-    ]
     result = 1
     for object, data in list_data:
         try:
@@ -163,12 +158,18 @@ def processing_multiple_data() -> None:
     print("\nFoundation systems online. Nexus ready for advanced streams.")
 
 
-def main() -> None:
+def main() -> Optional[int]:
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===")
     processing_numeric_processor()
     processing_text_processor()
     processing_log_processor()
-    processing_multiple_data()
+    list_data: List[Union[tuple[DataProcessor, Any], Dict]] = [
+        (NumericProcessor(), [1, 2, 3]),
+        (TextProcessor(), "hello world!"),
+        (LogProcessor(), "INFO: System ready")
+    ]
+    processing_multiple_data(list_data)
+    return 0
 
 
 if __name__ == "__main__":
