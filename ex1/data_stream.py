@@ -230,14 +230,23 @@ def filter_multiple_data() -> None:
           f" {t_len} {t_criteria} transaction")
 
 
-if __name__ == "__main__":
+def main() -> int:
     print("=== CODE NEXUS - POLYMORPHIC STREAM SYSTEM ===")
-    sensor = SensorStream("SENSOR_001")
-    initializing_sensor_stream(sensor)
-    transaction = TransactionStream("TRANS_001")
-    initializing_transaction_stream(transaction)
-    event = EventStream("EVENT_001")
-    initializing_event_stream(event)
-    process_multiple_streams()
-    filter_multiple_data()
+    try:
+        sensor = SensorStream("SENSOR_001")
+        initializing_sensor_stream(sensor)
+        transaction = TransactionStream("TRANS_001")
+        initializing_transaction_stream(transaction)
+        event = EventStream("EVENT_001")
+        initializing_event_stream(event)
+        process_multiple_streams()
+        filter_multiple_data()
+    except Exception as e:
+        print(f"\n[CRITICAL ERROR]: {e}")
+        return (1)
     print("\nAll streams processed successfully. Nexus throughput optimal.")
+    return (0)
+
+
+if __name__ == "__main__":
+    main()

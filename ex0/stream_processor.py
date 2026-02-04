@@ -169,15 +169,19 @@ def processing_multiple_data(list_data: List) -> None:
 
 def main() -> Optional[int]:
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===")
-    processing_numeric_processor()
-    processing_text_processor()
-    processing_log_processor()
-    list_data: List[Union[tuple[DataProcessor, Any], Dict]] = [
-        (NumericProcessor(), [1, 2, 3]),
-        (TextProcessor(), "hello world!"),
-        (LogProcessor(), "INFO: System ready")
-    ]
-    processing_multiple_data(list_data)
+    try:
+        processing_numeric_processor()
+        processing_text_processor()
+        processing_log_processor()
+        list_data: List[Union[tuple[DataProcessor, Any], Dict]] = [
+            (NumericProcessor(), [1, 2, 3]),
+            (TextProcessor(), "hello world!"),
+            (LogProcessor(), "INFO: System ready")
+        ]
+        processing_multiple_data(list_data)
+    except Exception as e:
+        print(f"\n[CRITICAL ERROR]: {e}")
+        return (1)
     print("\nFoundation systems online. Nexus ready for advanced streams.")
     return 0
 

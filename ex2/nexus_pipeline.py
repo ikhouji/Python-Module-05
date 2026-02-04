@@ -219,8 +219,9 @@ def main() -> Optional[int]:
         print(f"Performance: {ef}% efficiency, {t:.4f}s total processing time")
         test_failure_pipeline(stages)
         print("\nNexus Integration complete. All systems operational.")
-    except Exception:
-        print("[CRITICAL SYSTEM ERROR]")
+    except Exception as e:
+        print(f"\n[CRITICAL ERROR]: {e}")
+        return (1)
     return (0)
 
 
