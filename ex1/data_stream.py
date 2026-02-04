@@ -5,7 +5,6 @@ from typing import Any, List, Dict, Union, Optional
 class DataStream(ABC):
 
     def __init__(self, stream_id: Union[str, float, int]):
-        super().__init__()
         self.stream_id = stream_id
 
     @abstractmethod

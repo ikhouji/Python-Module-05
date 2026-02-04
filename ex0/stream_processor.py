@@ -18,6 +18,9 @@ class DataProcessor(ABC):
 
 class NumericProcessor(DataProcessor):
 
+    def __init__(self):
+        super().__init__()
+
     def process(self, data: Any) -> str:
         count: int = 0
         suum: float = 0
@@ -53,6 +56,9 @@ class NumericProcessor(DataProcessor):
 
 class TextProcessor(DataProcessor):
 
+    def __init__(self):
+        super().__init__()
+
     def process(self, data: Any) -> str:
         length = len(data)
         if length == 0:
@@ -74,6 +80,9 @@ class TextProcessor(DataProcessor):
 
 
 class LogProcessor(DataProcessor):
+
+    def __init__(self):
+        super().__init__()
 
     def process(self, data: Any) -> str:
         splited = data.split(':')
