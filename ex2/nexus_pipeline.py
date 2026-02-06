@@ -28,17 +28,24 @@ class InputStage():
         print("Stage 1: Input validation and parsing")
 
     def process(self, data: Any) -> Any:
+        to_print = data.get("to_print")
         try:
             if data["type"] == "json":
-                print(f"Input: {data['raw']}")
+                if to_print:
+                    print(f"Input: {data['raw']}")
             elif data["type"] == "csv":
-                print(f"Input: \"{data['raw']}\"")
+                if to_print:
+                    print(f"Input: \"{data['raw']}\"")
             elif data["type"] == "stream":
-                print("Input: Real-time sensor stream")
+                if to_print:
+                    print("Input: Real-time sensor stream")
+            else:
+                raise ValueError
             data["valid"] = True
         except Exception:
-            print("Error detected in stage 1, Invalid data")
-            data = {"error", "error in stage 1"}
+            if to_print:
+                print("Error detected in stage 1, Invalid data")
+            data = {"error": "error in stage 1"}
         return data
 
 
@@ -48,24 +55,27 @@ class TransformStage():
         print("Stage 2: Data transformation and enrichment")
 
     def process(self, data: Any) -> Dict:
-        """Process data."""
+        to_print = data.get("to_print")
         try:
             type = data["type"]
             raw = data["raw"]
             if type == "json":
                 data["parsed"] = json.loads(raw)
-                print("Transform: Enriched with metadata and validation")
+                if to_print:
+                    print("Transform: Enriched with metadata and validation")
             elif type == "csv":
                 data["parsed"] = raw.split(',')
-                print("Transform: Parsed and structured data")
+                if to_print:
+                    print("Transform: Parsed and structured data")
             elif type == "stream":
                 data["parsed"] = [float(number) for number in raw]
-                print("Transform: Aggregated and filtered")
+                if to_print:
+                    print("Transform: Aggregated and filtered")
             else:
                 raise ValueError()
         except Exception:
-            print(
-                "Error detected in Stage 2: Invalid data format")
+            if to_print:
+                print("Error detected in Stage 2: Invalid data format")
             data = {"error": "error in stage 2"}
 
         return data
@@ -77,6 +87,7 @@ class OutputStage():
         print("Stage 3: Output formatting and delivery")
 
     def process(self, data: Any) -> Any:
+        to_print = data.get("to_print")
         parsed = data.get("parsed")
         if data["type"] == "json":
             temp = parsed.get('value', 0)
@@ -85,10 +96,13 @@ class OutputStage():
                 range = "(Normal range)"
             else:
                 range = "(Out of range range)"
-            print(f"Output: Processed temperature reading: {temp}°C {range}\n")
+            if to_print:
+                print(
+                    f"Output: Processed temperature reading: {temp}°C {range}")
         elif data["type"] == "csv":
             wc = parsed.count("action")
-            print(f"Output: User activity logged: {wc} actions processed\n")
+            if to_print:
+                print(f"Output: User activity logged: {wc} actions processed")
         elif data["type"] == "stream":
             temps: float = 0
             count: int = 0
@@ -96,9 +110,13 @@ class OutputStage():
                 temps += temp
                 count += 1
             if count == 0:
-                print("Output: Stream summary: 0 readings, avg: 0°C\n")
-            av: float = temps / count
-            print(f"Output: Stream summary: {count} readings, avg: {av}°C\n")
+                if to_print:
+                    print("Output: Stream summary: 0 readings, avg: 0°C")
+            else:
+                av: float = temps / count
+                if to_print:
+                    print(f"Output: Stream summary: {count}"
+                          f" readings, avg: {av}°C")
         return data
 
 
@@ -108,8 +126,8 @@ class JSONAdapter(ProcessingPipeline):
         self.pipeline_id = pipeline_id
 
     def process(self, data: Any) -> Union[str, Any]:
-        print("Processing JSON data through pipeline...")
-        data = {"raw": data, "type": "json"}
+        print("\nProcessing JSON data through pipeline...")
+        data = {"raw": data, "type": "json", "to_print": True}
         for stage in self.stages:
             data = stage.process(data)
             if isinstance(data, dict) and "error" in data:
@@ -124,8 +142,8 @@ class CSVAdapter(ProcessingPipeline):
 
     def process(self, data: Any) -> Union[str, Any]:
 
-        print("Processing CSV data through same pipeline...")
-        data = {"raw": data, "type": "csv"}
+        print("\nProcessing CSV data through same pipeline...")
+        data = {"raw": data, "type": "csv", "to_print": True}
         for stage in self.stages:
             data = stage.process(data)
             if isinstance(data, dict) and "error" in data:
@@ -139,8 +157,8 @@ class StreamAdapter(ProcessingPipeline):
         self.pipeline_id = pipeline_id
 
     def process(self, data: Any) -> Union[str, Any]:
-        print("Processing Stream data through same pipeline...")
-        data = {"raw": data, "type": "stream"}
+        print("\nProcessing Stream data through same pipeline...")
+        data = {"raw": data, "type": "stream", "to_print": True}
         for stage in self.stages:
             data = stage.process(data)
             if isinstance(data, dict) and "error" in data:
@@ -172,12 +190,38 @@ def test_failure_pipeline(stages: List[ProcessingStage]) -> None:
     invalid_data = {
         "raw": "hello,world",
         "type": "json",
-        "valid": False
+        "valid": False,
+        "to_print": True
     }
     stages[1].process(invalid_data)
     print("Recovery initiated: Switching to backup processor")
     print("Recovery successful: Pipeline restored, processing"
           " resumed")
+
+
+def pipeline_chaining(stages: List[ProcessingStage]) -> tuple:
+    raw_data = "temp,hh,jj,action"
+    data = {'raw': raw_data, 'type': 'csv', 'to_print': False}
+    pipelines: List = []
+    data_flow: List = []
+
+    data = stages[0].process(data)
+    if "error" in data:
+        return pipelines, data_flow
+    pipelines.append("Pipeline A")
+    data_flow.append("Raw")
+    data = stages[1].process(data)
+    if "error" in data:
+        return pipelines, data_flow
+    pipelines.append("Pipeline B")
+    data_flow.append("Processed")
+    data_flow.append("Analyzed")
+    data = stages[2].process(data)
+    if "error" in data:
+        return pipelines, data_flow
+    pipelines.append("Pipeline C")
+    data_flow.append("Stored")
+    return pipelines, data_flow, data
 
 
 def main() -> Optional[int]:
@@ -202,17 +246,25 @@ def main() -> Optional[int]:
                 pipeline.add_stage(stage)
             manager.add_pipeline(pipeline)
 
-        print("\n=== Multi-Format Data Processing ===\n")
+        print("\n=== Multi-Format Data Processing ===")
         data_to_process = [
             '{"sensor": "temp", "value": 23.5, "unit": "C"}',
             "user,action,timestamp",
             [22.1, 21.8, 22.5, 23.0, 21.1]
         ]
-        manager.process(data_to_process)
-        print("=== Pipeline Chaining Demo ===")
-        print("Pipeline A -> Pipeline B -> Pipeline C")
-        print("Data flow: Raw -> Processed -> Analyzed -> Stored\n")
-        print("Chain result: 100 records processed through 3-stage pipeline")
+        manager.process(data_to_process * 50)
+        data_flow = pipeline_chaining(stages)
+        if data_flow and len(data_flow) >= 2:
+            if data_flow[0]:
+                print("\n=== Pipeline Chaining Demo ===")
+                print(" -> ".join(data_flow[0]))
+            if data_flow[1]:
+                print("Data flow:", " -> ".join(data_flow[1]))
+            if len(data_flow) == 3 and data_flow[2]:
+                records = len(data_flow[2]["parsed"])
+                print(f"Chain result: {records} records processed through "
+                      f"{len(data_flow[0])}-stage pipeline")
+
         end_time = time.time()
         t = end_time - start_time
         ef = int((0.00015 * 100) / t)

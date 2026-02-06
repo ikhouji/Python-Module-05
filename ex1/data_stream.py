@@ -4,7 +4,7 @@ from typing import Any, List, Dict, Union, Optional
 
 class DataStream(ABC):
 
-    def __init__(self, stream_id: Union[str, float, int]):
+    def __init__(self, stream_id: Union[str, float, int]) -> None:
         self.stream_id = stream_id
 
     @abstractmethod
@@ -119,7 +119,7 @@ class TransactionStream(DataStream):
         elif criteria == "small":
             for element in data_batch:
                 transaction = element.split(':')[0]
-                value = transaction = element.split(':')[1]
+                value = int(element.split(':')[1])
                 if transaction == "buy" or transaction == "sell":
                     if value <= 150:
                         filtered.append(element)
